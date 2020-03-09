@@ -73,13 +73,13 @@
 
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.codehaus.cargo/cargo-sample-java -->
+		<!-- https://mvnrepository.com/artifact/org.codehaus.cargo/cargo-maven2-plugin -->
 		<dependency>
 			<groupId>org.codehaus.cargo</groupId>
-			<artifactId>cargo-sample-java</artifactId>
+			<artifactId>cargo-maven2-plugin</artifactId>
 			<version>1.7.10</version>
-			<scope>test</scope>
 		</dependency>
+
 
 
 	</dependencies>

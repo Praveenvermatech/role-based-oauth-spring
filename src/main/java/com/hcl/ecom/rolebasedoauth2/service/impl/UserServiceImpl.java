@@ -132,10 +132,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 			 log.error("Old Password and New Password are same.");
 		}
 		userInfo.setPassword(passwordEncoder.encode(newPassword));
-		isPasswordChanged = true;
 		User user = userDao.save(userInfo);
-		if(user.getPassword().equals(passwordEncoder.encode(newPassword))){
+		if (passwordEncoder.matches(newPassword, user.getPassword()))  {
 			isPasswordChanged = true;
+		} else {
+			isPasswordChanged = false;
 		}
 		return isPasswordChanged;
 	}
@@ -144,12 +145,13 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		boolean login = false;
 		User existedUser = userDao.findByUsername(username);
 		if (existedUser != null) {
-			log.info("user information :"+existedUser.getEmail());
-			if (existedUser.getPassword().equals(passwordEncoder.encode(password))) {
+			log.info("user information :"+existedUser.getEmail()+", Password: "+existedUser.getPassword());
+			if (passwordEncoder.matches(password, existedUser.getPassword()))  {
 				login = true;
 			} else {
 				login = false;
 			}
+			
 		} else {
 			login = false;
 		}
