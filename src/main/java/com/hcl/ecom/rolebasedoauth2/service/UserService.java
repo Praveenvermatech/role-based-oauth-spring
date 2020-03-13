@@ -9,9 +9,9 @@ public interface UserService {
 
     UserDto save(UserDto user);
     List<UserDto> findAll();
-    User findOne(long id);
+    UserDto findOne(long id);
     void delete(long id);
-    User updateUser(UserDto user, long id);
+    UserDto updateUser(UserDto user, long id);
     boolean changePassword(String oldPassword, String newPassword, long id);
     boolean authentication(String username, String password);
     

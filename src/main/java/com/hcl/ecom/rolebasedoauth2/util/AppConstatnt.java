@@ -1,5 +1,7 @@
 package com.hcl.ecom.rolebasedoauth2.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class AppConstatnt {
 
 	public static final String CLIENT_ID = "hcl-client";
@@ -11,5 +13,23 @@ public class AppConstatnt {
 	public static final String SCOPE_READ = "read";
 	public static final String SCOPE_WRITE = "write";
 	public static final String TRUST = "trust";
+	
+	
+	
+	/***
+	 * Convert Object to JSON String
+	 * 
+	 * @param obj
+	 * @return String
+	 */
+	public static String convertObjectToJsonString(Object obj) {
+		try {
+			return new ObjectMapper().writeValueAsString(obj);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	
 	
 }

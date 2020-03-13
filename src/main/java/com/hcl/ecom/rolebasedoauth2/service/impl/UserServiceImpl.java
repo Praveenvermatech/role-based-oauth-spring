@@ -66,8 +66,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public User findOne(long id) {
-        return userDao.findById(id).get();
+    public UserDto findOne(long id) {
+        return userDao.findById(id).get().toUserDto();
     }
 
     @Override
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
 	@Override
-	public User updateUser(UserDto user, long id) {
+	public UserDto updateUser(UserDto user, long id) {
 		User updatedUser= userDao.findById(id).get();
 		if(updatedUser == null){
             log.error("Invalid id.");
@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		updatedUser.setContact(user.getContact());
 		updatedUser.setShippingAddress(user.getShippingAddress());
 		updatedUser.setBillingAddress(user.getBillingAddress());
-		return userDao.save(updatedUser);
+		return userDao.save(updatedUser).toUserDto();
 	}
 
 	@Override
