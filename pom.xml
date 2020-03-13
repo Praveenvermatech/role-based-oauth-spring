@@ -73,12 +73,11 @@
 
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.codehaus.cargo/cargo-maven2-plugin -->
 		<dependency>
-			<groupId>org.codehaus.cargo</groupId>
-			<artifactId>cargo-maven2-plugin</artifactId>
-			<version>1.7.10</version>
-		</dependency>
+    <groupId>commons-digester</groupId>
+    <artifactId>commons-digester</artifactId>
+    <version>2.1</version>
+</dependency>
 
 
 
