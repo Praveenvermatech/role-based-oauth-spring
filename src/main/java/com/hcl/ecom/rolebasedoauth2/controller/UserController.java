@@ -2,14 +2,18 @@ package com.hcl.ecom.rolebasedoauth2.controller;
 
 import com.hcl.ecom.rolebasedoauth2.dto.ApiResponse;
 import com.hcl.ecom.rolebasedoauth2.dto.UserDto;
+import com.hcl.ecom.rolebasedoauth2.dto.ValidateTokenDTO;
 import com.hcl.ecom.rolebasedoauth2.service.AuthenticationFacadeService;
 import com.hcl.ecom.rolebasedoauth2.service.UserService;
+
+import java.util.Collections;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,7 +41,7 @@ public class UserController {
 
 	@Secured({ ROLE_ADMIN })
 	@GetMapping
-	public ApiResponse listUser() {
+	public ApiResponse listOfUsers() {
 		log.info(String.format("received request to list user %s",
 				authenticationFacadeService.getAuthentication().getPrincipal()));
 		return new ApiResponse(HttpStatus.OK, SUCCESS, userService.findAll());
@@ -118,14 +122,15 @@ public class UserController {
 		return new ApiResponse(HttpStatus.OK, SUCCESS, userService.changePassword(oldPassword, newPassword, id));
 	}
 
-	@Secured({ ROLE_ADMIN, ROLE_USER, ROLE_CLIENT })
+	
 	@PostMapping("/login")
 	public ApiResponse authenticate(@RequestParam String username, @RequestParam String password) {
-		log.info(String.format("received request to login user %s",
-				authenticationFacadeService.getAuthentication().getPrincipal()));
+		
 		return new ApiResponse(HttpStatus.OK, SUCCESS, userService.authentication(username, password));
 
 	}
+	
+		
 
 	@GetMapping("/hello")
 	public String hello() {
@@ -135,6 +140,8 @@ public class UserController {
 	@Secured("ROLE_USER")
 	@GetMapping("/hello-again")
 	public String helloAgain() {
+		
+		
 		return "hello again";
 	}
 

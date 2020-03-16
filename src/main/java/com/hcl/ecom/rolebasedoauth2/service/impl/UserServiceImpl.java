@@ -3,6 +3,7 @@ package com.hcl.ecom.rolebasedoauth2.service.impl;
 import com.hcl.ecom.rolebasedoauth2.dao.RoleDao;
 import com.hcl.ecom.rolebasedoauth2.dao.UserDao;
 import com.hcl.ecom.rolebasedoauth2.dto.UserDto;
+import com.hcl.ecom.rolebasedoauth2.dto.ValidateTokenDTO;
 import com.hcl.ecom.rolebasedoauth2.model.Role;
 import com.hcl.ecom.rolebasedoauth2.model.RoleType;
 import com.hcl.ecom.rolebasedoauth2.model.User;
@@ -12,16 +13,22 @@ import org.bouncycastle.openssl.PasswordException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,7 +44,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Autowired
     private RoleDao roleDao;
-
+   
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
@@ -79,12 +86,12 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public UserDto save(UserDto userDto) {
         User userWithDuplicateUsername = userDao.findByUsername(userDto.getUsername());
         if(userWithDuplicateUsername != null && userDto.getId() != userWithDuplicateUsername.getId()) {
-            log.error(String.format("Duplicate username %", userDto.getUsername()));
+           // log.error(String.format("Duplicate username %", userDto.getUsername()));
             throw new RuntimeException("Duplicate username.");
         }
         User userWithDuplicateEmail = userDao.findByEmail(userDto.getEmail());
         if(userWithDuplicateEmail != null && userDto.getId() != userWithDuplicateEmail.getId()) {
-            log.error(String.format("Duplicate email %", userDto.getEmail()));
+           // log.error(String.format("Duplicate email %", userDto.getEmail()));
             throw new RuntimeException("Duplicate email.");
         }
         User user = new User();
@@ -157,6 +164,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 		}
 		return login;
 	}
-		
+
 		
 }

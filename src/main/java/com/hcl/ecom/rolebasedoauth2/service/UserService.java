@@ -1,9 +1,8 @@
 package com.hcl.ecom.rolebasedoauth2.service;
 
-import com.hcl.ecom.rolebasedoauth2.dto.UserDto;
-import com.hcl.ecom.rolebasedoauth2.model.User;
-
 import java.util.List;
+
+import com.hcl.ecom.rolebasedoauth2.dto.UserDto;
 
 public interface UserService {
 
