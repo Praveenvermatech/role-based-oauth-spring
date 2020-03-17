@@ -1,8 +1,8 @@
 package com.hcl.ecom.rolebasedoauth2.controller;
 
 import com.hcl.ecom.rolebasedoauth2.dto.ApiResponse;
+import com.hcl.ecom.rolebasedoauth2.dto.ChangePasswordRequest;
 import com.hcl.ecom.rolebasedoauth2.dto.UserDto;
-import com.hcl.ecom.rolebasedoauth2.dto.ValidateTokenDTO;
 import com.hcl.ecom.rolebasedoauth2.service.AuthenticationFacadeService;
 import com.hcl.ecom.rolebasedoauth2.service.UserService;
 
@@ -79,14 +79,17 @@ public class UserController {
 	 * This method contains the delete user/client/admin
 	 * Only access from ROLE_ADMIN
 	 * @param id
+	 * @throws Exception 
 	 */
 	@Secured({ ROLE_ADMIN })
 	@DeleteMapping(value = "/{id}")
-	public void delete(@PathVariable(value = "id") long id) {
-		log.info(String.format("received request to delete user %s",
-				authenticationFacadeService.getAuthentication().getPrincipal()));
-		userService.delete(id);
-	}
+	public ApiResponse delete(@PathVariable(value = "id") long id) throws Exception
+		{
+			log.info(String.format("received request to delete user %s",
+					authenticationFacadeService.getAuthentication().getPrincipal()));
+		  return new ApiResponse(HttpStatus.OK, SUCCESS, userService.delete(id));
+		}
+	
 	
 	
 /**
@@ -97,7 +100,7 @@ public class UserController {
  * @return ApiResponse
  */
 	@Secured({ ROLE_ADMIN, ROLE_USER, ROLE_CLIENT })
-	@PutMapping("/users/{id}")
+	@PutMapping("/update/{id}")
 	public ApiResponse updateUser(@RequestBody(required = true) UserDto user, @PathVariable long id) {
 		log.info(String.format("received request to update user information %s",
 				authenticationFacadeService.getAuthentication().getPrincipal()));
@@ -107,19 +110,17 @@ public class UserController {
 	
 	/**
 	 * This method contains the Change Password of user/client/admin
-	 * Only access from ROLE_ADMIN,ROLE_USER, ROLE_CLIENT
-	 * @param oldPassword
-	 * @param newPassword
-	 * @param id
+	 * Only access from ROLE_USER, ROLE_CLIENT
+	 * @param changePasswordRequest
 	 * @return ApiResponse
 	 */
 	@Secured({ ROLE_USER, ROLE_CLIENT })
-	@PutMapping("/changePassword/{id}")
-	public ApiResponse changePassword(@RequestBody(required = true) String oldPassword,
-			@RequestBody(required = true) String newPassword, @PathVariable long id) {
+	@PutMapping("/changePassword")
+	public ApiResponse changePassword(@RequestBody(required = true) ChangePasswordRequest changePasswordRequest) {
 		log.info(String.format("received request to update user password %s",
 				authenticationFacadeService.getAuthentication().getPrincipal()));
-		return new ApiResponse(HttpStatus.OK, SUCCESS, userService.changePassword(oldPassword, newPassword, id));
+		return new ApiResponse(HttpStatus.OK, SUCCESS, userService.changePassword(changePasswordRequest.getOldPassword(),
+				changePasswordRequest.getNewPassword(), changePasswordRequest.getId()));
 	}
 
 	

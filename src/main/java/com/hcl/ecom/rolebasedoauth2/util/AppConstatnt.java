@@ -13,6 +13,8 @@ public class AppConstatnt {
 	public static final String SCOPE_READ = "read";
 	public static final String SCOPE_WRITE = "write";
 	public static final String TRUST = "trust";
+	public static final String DELETE_SUCCESSFULLY = "Delete Successfully";
+	public static final String USERID_NOT_FOUND = "Invalid User id.";
 	
 	
 	

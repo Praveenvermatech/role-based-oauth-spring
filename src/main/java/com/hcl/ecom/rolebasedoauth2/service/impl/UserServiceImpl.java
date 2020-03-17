@@ -3,11 +3,11 @@ package com.hcl.ecom.rolebasedoauth2.service.impl;
 import com.hcl.ecom.rolebasedoauth2.dao.RoleDao;
 import com.hcl.ecom.rolebasedoauth2.dao.UserDao;
 import com.hcl.ecom.rolebasedoauth2.dto.UserDto;
-import com.hcl.ecom.rolebasedoauth2.dto.ValidateTokenDTO;
 import com.hcl.ecom.rolebasedoauth2.model.Role;
 import com.hcl.ecom.rolebasedoauth2.model.RoleType;
 import com.hcl.ecom.rolebasedoauth2.model.User;
 import com.hcl.ecom.rolebasedoauth2.service.UserService;
+import com.hcl.ecom.rolebasedoauth2.util.AppConstatnt;
 
 import org.bouncycastle.openssl.PasswordException;
 import org.slf4j.Logger;
@@ -78,8 +78,15 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public void delete(long id) {
-        userDao.deleteById(id);
+    public String delete(long id) {
+    	
+    	User user =userDao.findById(id).get();
+    	if(user!=null) {
+    		userDao.deleteById(id);
+    	}else {
+    		throw new UsernameNotFoundException(AppConstatnt.USERID_NOT_FOUND);
+    	}
+        return AppConstatnt.DELETE_SUCCESSFULLY;
     }
 
     @Override

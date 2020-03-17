@@ -3,10 +3,13 @@
  */
 package com.hcl.ecom.rolebasedoauth2.controller;
 
+import static org.hamcrest.CoreMatchers.any;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -18,6 +21,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hcl.ecom.rolebasedoauth2.RoleBasedOauth2Application;
 import com.hcl.ecom.rolebasedoauth2.config.OAuthHelper;
 import com.hcl.ecom.rolebasedoauth2.dto.ApiResponse;
+import com.hcl.ecom.rolebasedoauth2.dto.ChangePasswordRequest;
 import com.hcl.ecom.rolebasedoauth2.dto.UserDto;
 import com.hcl.ecom.rolebasedoauth2.model.User;
 import com.hcl.ecom.rolebasedoauth2.service.UserService;
@@ -60,7 +65,13 @@ public class UserControllerTest {
 
 	private MockMvc mockMvc;
 
-	UserDto user;
+	UserDto user, updatedUser;
+	
+	@InjectMocks 
+	UserController userController;
+	
+	@Mock 
+	private UserService userService;
 
 	/*
 	 * @Autowired UserServiceImpl userServiceImpl;
@@ -74,12 +85,15 @@ public class UserControllerTest {
 	public void setup() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(webapp).apply(springSecurity()).build();
 		// Dummy User
+		
+		
+		//--------------------------------
 		user = new UserDto();
-		user.setId(2);
-		user.setFirstName("test");
-		user.setLastName("client");
-		user.setUsername("pawan15");
-		user.setEmail("pawan15@hcl.com");
+		user.setId(29);
+		user.setFirstName("Bharat-1");
+		user.setLastName("Sharma");
+		user.setUsername("bharat-1");
+		user.setEmail("bharat1@hcl.com");
 		user.setPassword("abc1234");
 		user.setContact(878765786);
 		user.setBillingAddress("HCL IT CITY");
@@ -87,6 +101,7 @@ public class UserControllerTest {
 		List<String> roleList = new ArrayList<>();
 		roleList.add("USER");
 		user.setRole(roleList);
+	
 	}
 
 
@@ -94,10 +109,12 @@ public class UserControllerTest {
 	public void createTest_success() throws Exception {
 		String requestUrl = "/users";
 
-//		Mockito.when(userService.save(user)).thenReturn(user);
-//		ApiResponse apiResponse=userController.create(user);
-//		assertEquals(200,apiResponse.getStatus();
-
+		
+		  Mockito.when(userService.save(user)).thenReturn(user); 
+		  ApiResponse apiResponse=userController.create(user);
+		  assertEquals(200,apiResponse.getStatus());
+		 
+		
 		RequestPostProcessor accessToken = authHelper.addBearerToken("dummy", "ROLE_ADMIN"); // Valid ROLE
 		String inputJson = convertObjectToJsonString(user);
 		ResultActions resultActions = mockMvc
@@ -133,7 +150,7 @@ public class UserControllerTest {
 
 	@Test
 	public void getUserTest() throws Exception {
-		String requestUrl = "/users/2";
+		String requestUrl = "/users/29";
 		RequestPostProcessor accessToken = authHelper.addBearerToken("dummy", "ROLE_CLIENT");
 		ResultActions resultActions = mockMvc.perform(get(requestUrl).with(accessToken)).andDo(print());
 		resultActions.andExpect(status().isOk());
@@ -141,7 +158,7 @@ public class UserControllerTest {
 
 	@Test
 	public void getUserTest_UnAuthenticated() throws Exception {
-		String requestUrl = "/users/2"; 
+		String requestUrl = "/users/29"; 
 		ResultActions resultActions = mockMvc.perform(get(requestUrl)).andDo(print());
 		resultActions.andExpect(status().isUnauthorized());
 
@@ -171,6 +188,118 @@ public class UserControllerTest {
 		resultActions.andExpect(status().isForbidden());
 
 	}
+	
+	@Test
+	public void updateUserTest_success() throws Exception {
+		String requestUrl = "/users/update/29";
+		updatedUser = user;
+		updatedUser.setId(29);
+		updatedUser.setFirstName("test");
+		updatedUser.setLastName("client");
+		updatedUser.setUsername("testclient");
+		updatedUser.setEmail("test@hcl.com");
+		updatedUser.setPassword("abc1234");
+		updatedUser.setContact(878765786);
+		updatedUser.setBillingAddress("HCL IT CITY");
+		updatedUser.setShippingAddress("HCL IT CITY");
+		List<String> updateRoleList = new ArrayList<>();
+		updateRoleList.add("CLIENT");
+		updatedUser.setRole(updateRoleList);
+		
+		RequestPostProcessor accessToken = authHelper.addBearerToken("dummy", "ROLE_ADMIN"); // Valid ROLE
+		String inputJson = convertObjectToJsonString(user);
+		ResultActions resultActions = mockMvc
+				.perform(put(requestUrl).with(accessToken).contentType(MediaType.APPLICATION_JSON_VALUE)
+						.content(inputJson).accept(MediaType.APPLICATION_JSON_VALUE))
+				.andDo(print());
+		resultActions.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void updateUserTest_unAuthorized() throws Exception {
+		String requestUrl = "/users/update/29";
+
+		String inputJson = convertObjectToJsonString(user);
+		ResultActions resultActions = mockMvc.perform(put(requestUrl).contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(inputJson).accept(MediaType.APPLICATION_JSON_VALUE)).andDo(print());
+		resultActions.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	public void updateUserTest_AccessDenied() throws Exception {
+		String requestUrl = "/users/update/29";
+
+		RequestPostProcessor accessToken = authHelper.addBearerToken("dummy", "ROLE_USER"); // invalid Role
+		String inputJson = convertObjectToJsonString(user);
+		ResultActions resultActions = mockMvc
+				.perform(put(requestUrl).with(accessToken).contentType(MediaType.APPLICATION_JSON_VALUE)
+						.content(inputJson).accept(MediaType.APPLICATION_JSON_VALUE))
+				.andDo(print());
+		resultActions.andExpect(status().isForbidden());
+	}
+	
+	
+	@Test
+	public void deleteTest_unAuthenticated() throws Exception {
+		String requestUrl = "/users/29";
+		
+		ResultActions resultActions = mockMvc.perform(delete(requestUrl)).andDo(print());
+		resultActions.andExpect(status().isUnauthorized());
+
+	}
+	@Test
+	public void deleteTest_accessDenied() throws Exception {
+		String requestUrl = "/users/29";
+		RequestPostProcessor accessToken = authHelper.addBearerToken("dummy", "ROLE_USER");
+		ResultActions resultActions = mockMvc.perform(delete(requestUrl).with(accessToken)).andDo(print());
+		resultActions.andExpect(status().isForbidden());
+
+	}
+	
+	@Test
+	public void deleteTest_success() throws Exception {
+		String requestUrl = "/users/2";
+		RequestPostProcessor accessToken = authHelper.addBearerToken("dummy", "ROLE_ADMIN");
+		ResultActions resultActions = mockMvc.perform(delete(requestUrl).with(accessToken)).andDo(print());
+		resultActions.andExpect(status().isOk());
+
+	}
+	
+	@Test
+	public void changePasswordTest_success() throws Exception {
+		String requestUrl = "/users/changePassword";
+		String inputJson = convertObjectToJsonString(new ChangePasswordRequest(29,"abc1234","abc12345"));
+		RequestPostProcessor accessToken = authHelper.addBearerToken("dummy", "ROLE_CLIENT");
+		ResultActions resultActions = mockMvc.perform(put(requestUrl).with(accessToken)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(inputJson).accept(MediaType.APPLICATION_JSON_VALUE)).andDo(print());
+		resultActions.andExpect(status().isOk());
+
+	}
+	
+	@Test
+	public void changePasswordTest_unAuthorized() throws Exception {
+		String requestUrl = "/users/changePassword";
+		String inputJson = convertObjectToJsonString(new ChangePasswordRequest(29,"abc1234","abc12345"));
+		ResultActions resultActions = mockMvc.perform(put(requestUrl)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(inputJson).accept(MediaType.APPLICATION_JSON_VALUE)).andDo(print());
+		resultActions.andExpect(status().isUnauthorized());
+
+	}
+	
+	@Test
+	public void changePasswordTest_accessDenied() throws Exception {
+		String requestUrl = "/users/changePassword";
+		String inputJson = convertObjectToJsonString(new ChangePasswordRequest(29,"abc1234","abc12345"));
+		RequestPostProcessor accessToken = authHelper.addBearerToken("dummy", "ROLE_ADMIN");
+		ResultActions resultActions = mockMvc.perform(put(requestUrl).with(accessToken)
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(inputJson).accept(MediaType.APPLICATION_JSON_VALUE)).andDo(print());
+		resultActions.andExpect(status().isForbidden());
+
+	}
+	
 	
 	
 
