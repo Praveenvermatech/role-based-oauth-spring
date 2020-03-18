@@ -12,10 +12,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,8 +21,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.hcl.ecom.rolebasedoauth2.RoleBasedOauth2Application;
 import com.hcl.ecom.rolebasedoauth2.controller.UserController;
 import com.hcl.ecom.rolebasedoauth2.dao.UserDao;
+import com.hcl.ecom.rolebasedoauth2.dto.ChangePasswordRequest;
 import com.hcl.ecom.rolebasedoauth2.dto.UserDto;
 import com.hcl.ecom.rolebasedoauth2.model.User;
+import com.hcl.ecom.rolebasedoauth2.util.AppConstatnt;
 
 /**
  * @author praveen.verma
@@ -75,8 +74,11 @@ public class UserServiceImplTest {
 	 * Test method for {@link com.hcl.ecom.rolebasedoauth2.service.impl.UserServiceImpl#findAll()}.
 	 */
 	@Test
-	public void testFindAll() {
-		
+	public void testFindAll_when_success() {
+		List<UserDto> listOfUser = new ArrayList<>();
+		listOfUser.add(user);
+		 Mockito.when(userServiceImpl.findAll()).thenReturn(listOfUser); 
+		  assertEquals("ajeet",listOfUser.get(0).getUsername());
 		  
 	}
 
@@ -84,16 +86,19 @@ public class UserServiceImplTest {
 	 * Test method for {@link com.hcl.ecom.rolebasedoauth2.service.impl.UserServiceImpl#findOne(long)}.
 	 */
 	@Test
-	public void testFindOne() {
-		fail("Not yet implemented"); // TODO
+	public void testFindOne_when_success() {
+		 Mockito.when(userServiceImpl.findOne(29)).thenReturn(user); 
+		  assertEquals("ajeet",user.getUsername());
 	}
 
 	/**
 	 * Test method for {@link com.hcl.ecom.rolebasedoauth2.service.impl.UserServiceImpl#delete(long)}.
 	 */
 	@Test
-	public void testDelete() {
-		fail("Not yet implemented"); // TODO
+	public void testDelete_when_success() {
+		
+		 Mockito.when(userServiceImpl.delete(29)).thenReturn(AppConstatnt.DELETE_SUCCESSFULLY); 
+		 assertEquals("Delete Successfully",AppConstatnt.DELETE_SUCCESSFULLY);
 	}
 
 	/**
@@ -128,17 +133,62 @@ public class UserServiceImplTest {
 	 * Test method for {@link com.hcl.ecom.rolebasedoauth2.service.impl.UserServiceImpl#updateUser(com.hcl.ecom.rolebasedoauth2.dto.UserDto, long)}.
 	 */
 	@Test
-	public void testUpdateUser() {
-		fail("Not yet implemented"); // TODO
+	public void testUpdateUser_when_success() {
+		user.setUsername("ajeet-1");
+		 Mockito.when(userServiceImpl.updateUser(user, 29)).thenReturn(user); 
+		  assertEquals("ajeet-1",user.getUsername());
+	}
+	
+	@Test
+	public void testUpdateUser_when_failed() {
+		user.setUsername("ajeet-1");
+		 Mockito.when(userServiceImpl.updateUser(user, 333)).thenReturn(user); 
+		 assertEquals("ajeet-1",user.getUsername());
 	}
 
 	/**
 	 * Test method for {@link com.hcl.ecom.rolebasedoauth2.service.impl.UserServiceImpl#changePassword(java.lang.String, java.lang.String, long)}.
 	 */
 	@Test
-	public void testChangePassword() {
-		fail("Not yet implemented"); // TODO
+	public void testChangePassword_when_success() {
+		ChangePasswordRequest passwordRequest = new ChangePasswordRequest(user.getId(), user.getPassword(), "abc12345");
+		 Mockito.when(userServiceImpl.changePassword(passwordRequest.getOldPassword(),passwordRequest.getNewPassword()
+				 , passwordRequest.getId())).thenReturn(AppConstatnt.PASSWORD_CHANGED_SUCCESSFULLY); 
+		 assertEquals(userServiceImpl.changePassword(passwordRequest.getOldPassword(),passwordRequest.getNewPassword()
+				 , passwordRequest.getId()),AppConstatnt.PASSWORD_CHANGED_SUCCESSFULLY);
 	}
+	
+	
+	@Test
+	public void testChangePassword_when_invalidUser() {
+		ChangePasswordRequest passwordRequest = new ChangePasswordRequest(249, user.getPassword(), "abc12345");
+		 Mockito.when(userServiceImpl.changePassword(passwordRequest.getOldPassword(),passwordRequest.getNewPassword()
+				 , passwordRequest.getId())).thenReturn(AppConstatnt.USERID_NOT_FOUND); 
+		 assertEquals(userServiceImpl.changePassword(passwordRequest.getOldPassword(),passwordRequest.getNewPassword()
+				 , passwordRequest.getId()),AppConstatnt.USERID_NOT_FOUND);
+	}
+	
+	
+	@Test
+	public void testChangePassword_when_samePassword() {
+		ChangePasswordRequest passwordRequest = new ChangePasswordRequest(user.getId(), user.getPassword(), "abc1234");
+		 Mockito.when(userServiceImpl.changePassword(passwordRequest.getOldPassword(),passwordRequest.getNewPassword()
+				 , passwordRequest.getId())).thenReturn(AppConstatnt.PASSWORD_IS_SAME); 
+		 assertEquals(userServiceImpl.changePassword(passwordRequest.getOldPassword(),passwordRequest.getNewPassword()
+				 , passwordRequest.getId()),AppConstatnt.PASSWORD_IS_SAME);
+	}
+	
+	
+	@Test
+	public void testChangePassword_when_imvalidOldPassword() {
+		ChangePasswordRequest passwordRequest = new ChangePasswordRequest(user.getId(), user.getPassword(), "abc123456");
+		 Mockito.when(userServiceImpl.changePassword(passwordRequest.getOldPassword(),passwordRequest.getNewPassword()
+				 , passwordRequest.getId())).thenReturn(AppConstatnt.PASSWORD_IS_NOT_CORRECT); 
+		 assertEquals(userServiceImpl.changePassword(passwordRequest.getOldPassword(),passwordRequest.getNewPassword()
+				 , passwordRequest.getId()),AppConstatnt.PASSWORD_IS_NOT_CORRECT);
+	}
+	
+	
 
 	/**
 	 * Test method for {@link com.hcl.ecom.rolebasedoauth2.service.impl.UserServiceImpl#authentication(java.lang.String, java.lang.String)}.

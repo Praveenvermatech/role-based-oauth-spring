@@ -109,7 +109,7 @@ public class UserControllerTest {
 	public void createTest_success() throws Exception {
 		String requestUrl = "/users";
 
-		
+		// Mock here
 		  Mockito.when(userService.save(user)).thenReturn(user); 
 		  ApiResponse apiResponse=userController.create(user);
 		  assertEquals(200,apiResponse.getStatus());

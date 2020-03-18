@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -123,7 +124,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	public UserDto updateUser(UserDto user, long id) {
 		User updatedUser= userDao.findById(id).get();
 		if(updatedUser == null){
-            log.error("Invalid id.");
+            log.error("Invalid User id.");
             throw new UsernameNotFoundException("Invalid id.");
         }
 		updatedUser.setFirstName(user.getFirstName());
@@ -135,24 +136,35 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 	}
 
 	@Override
-	public boolean changePassword(String oldPassword, String newPassword, long id)  {
-		boolean isPasswordChanged = false;
-		User userInfo = userDao.findById(id).get();
+	public String changePassword(String oldPassword, String newPassword, long id)  {
+		User userInfo = null;
+		try {
+		userInfo = userDao.findById(id).get();
+		}catch(NoSuchElementException ex) {
+			ex.printStackTrace();
+		}
 		if(userInfo == null){
-            log.error("Invalid id.");
-            throw new UsernameNotFoundException("Invalid id.");
+            log.error(AppConstatnt.USERID_NOT_FOUND);
+            return AppConstatnt.USERID_NOT_FOUND;
         }
 		if(oldPassword.equals(newPassword)) {
-			 log.error("Old Password and New Password are same.");
+			 log.error(AppConstatnt.PASSWORD_IS_SAME);
+			 return AppConstatnt.PASSWORD_IS_SAME;
 		}
+		if(passwordEncoder.matches(oldPassword, userInfo.getPassword())) {
 		userInfo.setPassword(passwordEncoder.encode(newPassword));
 		User user = userDao.save(userInfo);
 		if (passwordEncoder.matches(newPassword, user.getPassword()))  {
-			isPasswordChanged = true;
+			log.info(AppConstatnt.PASSWORD_CHANGED_SUCCESSFULLY);
+			return AppConstatnt.PASSWORD_CHANGED_SUCCESSFULLY;
 		} else {
-			isPasswordChanged = false;
+			log.error(AppConstatnt.PASSWORD_NOT_CHANGED);
+			return AppConstatnt.PASSWORD_NOT_CHANGED;
 		}
-		return isPasswordChanged;
+		}else {
+			log.error(AppConstatnt.PASSWORD_IS_NOT_CORRECT);
+			return AppConstatnt.PASSWORD_IS_NOT_CORRECT;
+		}
 	}
 	@Override
 	public boolean authentication(String username, String password) {

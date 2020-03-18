@@ -11,7 +11,7 @@ public interface UserService {
     UserDto findOne(long id);
     String delete(long id);
     UserDto updateUser(UserDto user, long id);
-    boolean changePassword(String oldPassword, String newPassword, long id);
+    String changePassword(String oldPassword, String newPassword, long id);
     boolean authentication(String username, String password);
     
     

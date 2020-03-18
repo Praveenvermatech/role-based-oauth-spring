@@ -15,6 +15,10 @@ public class AppConstatnt {
 	public static final String TRUST = "trust";
 	public static final String DELETE_SUCCESSFULLY = "Delete Successfully";
 	public static final String USERID_NOT_FOUND = "Invalid User id.";
+	public static final String PASSWORD_IS_SAME = "Old Password and New Password are same.";
+	public static final String PASSWORD_CHANGED_SUCCESSFULLY = "Password Changed successfully.";
+	public static final String PASSWORD_NOT_CHANGED = "Password does not Changed.";
+	public static final String PASSWORD_IS_NOT_CORRECT = "Old Password is not correct. Please give the correct password";
 	
 	
 	
