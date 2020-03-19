@@ -194,8 +194,19 @@ public class UserServiceImplTest {
 	 * Test method for {@link com.hcl.ecom.rolebasedoauth2.service.impl.UserServiceImpl#authentication(java.lang.String, java.lang.String)}.
 	 */
 	@Test
-	public void testAuthentication() {
-		fail("Not yet implemented"); // TODO
+	public void testAuthentication_when_success() {
+		Mockito.when(userServiceImpl.authentication(user.getUsername(), user.getPassword())).thenReturn(true); 
+		 assertEquals(userServiceImpl.authentication(user.getUsername(), user.getPassword()),true);
 	}
 
+	/**
+	 * Test method for {@link com.hcl.ecom.rolebasedoauth2.service.impl.UserServiceImpl#authentication(java.lang.String, java.lang.String)}.
+	 */
+	@Test
+	public void testAuthentication_when_failed() {
+		Mockito.when(userServiceImpl.authentication("abc", "abc123")).thenReturn(false); 
+		 assertEquals(userServiceImpl.authentication("abc", "abc123"),false);
+	}
+	
+	
 }

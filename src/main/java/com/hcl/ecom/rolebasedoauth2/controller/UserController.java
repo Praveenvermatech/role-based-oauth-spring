@@ -39,11 +39,13 @@ public class UserController {
 	 * @return ApiResponse
 	 */
 
-	@Secured({ ROLE_ADMIN })
+//	@Secured({ ROLE_ADMIN })
 	@GetMapping
 	public ApiResponse listOfUsers() {
-		log.info(String.format("received request to list user %s",
-				authenticationFacadeService.getAuthentication().getPrincipal()));
+		/*
+		 * log.info(String.format("received request to list user %s",
+		 * authenticationFacadeService.getAuthentication().getPrincipal()));
+		 */
 		return new ApiResponse(HttpStatus.OK, SUCCESS, userService.findAll());
 	}
 

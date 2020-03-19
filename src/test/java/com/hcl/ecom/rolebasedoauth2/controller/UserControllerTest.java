@@ -73,21 +73,11 @@ public class UserControllerTest {
 	@Mock 
 	private UserService userService;
 
-	/*
-	 * @Autowired UserServiceImpl userServiceImpl;
-	 * 
-	 * @Autowired UserController userController;
-	 * 
-	 * @Mock private UserService userService;
-	 */
-
 	@Before
 	public void setup() {
 		mockMvc = MockMvcBuilders.webAppContextSetup(webapp).apply(springSecurity()).build();
 		// Dummy User
 		
-		
-		//--------------------------------
 		user = new UserDto();
 		user.setId(29);
 		user.setFirstName("Bharat-1");
